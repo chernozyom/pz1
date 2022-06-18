@@ -1,0 +1,70 @@
+class Sorter:
+    array = []
+    swaps = 0
+    comparisons = 0
+    depth = 0
+
+    def __init__(self, arr):
+        self.array = arr
+
+    def sort(self):
+        if len(self.array) == 0:
+            return []
+        self.array = self._real_sort(self.array, 0, len(self.array) - 1)
+
+    def _real_sort(self, arr, from_index, to_index):
+        self.depth += 1
+        if from_index >= to_index:
+            return arr
+        pivot = self._partition(arr, from_index, to_index)
+        self._real_sort(arr, from_index, pivot)
+        self._real_sort(arr, pivot + 1, to_index)
+        return arr
+
+    def _partition(self, arr, from_index, to_index):
+        pivot = arr[from_index]
+        i = from_index
+        j = to_index
+
+        while True:
+            while arr[i] < pivot:
+                i += 1
+                self.comparisons += 1
+
+            while arr[j] > pivot:
+                j -= 1
+                self.comparisons += 1
+
+            self.comparisons += 2
+            if i >= j:
+                return j
+
+            tmp = arr[i]
+            arr[i] = arr[j]
+            arr[j] = tmp
+
+            i += 1
+            j -= 1
+            self.swaps += 1
+
+    def check_sorted(self):
+        if len(self.array) < 2:
+            return True
+
+        prev = self.array[0]
+        for i in self.array[1:]:
+            if i < prev:
+                return False
+        return True
+
+
+if input('Ручной ввод? [да/нет]: ').lower() == 'да':
+    arr = [int(i) for i in input('Введите числа через пробел: ').split()]
+else:
+    import random
+    num = int(input('Введите количество случайных чисел: '))
+    arr = [random.randint(0, 100000) for i in range(num)]
+    
+qs = Sorter(arr)
+qs.sort()
+print(f"Перестановок: {qs.swaps}, сравнений: {qs.comparisons}, глубина: {qs.depth}")
