@@ -1,0 +1,52 @@
+from collections import deque
+
+class Hashtable:
+    def __init__(self, arr=None):
+        if arr is None: arr = []
+        self.table = {}
+        self.hash_function = hash
+
+        for k, v in arr:
+            self.add(k, v)
+
+    def get(self, k):
+        hk = self.hash_function(k)
+        if hk in self.table:
+            ll = self.table[hk]
+            if len(ll) == 1:
+                return ll[0][1]
+
+            for original_key, v in ll:
+                if k == original_key:
+                    return v
+        return None
+
+    def add(self, k, v):
+        hk = self.hash_function(k)
+        if hk not in self.table:
+            self.table[hk] = deque([(k, v)])
+            return
+
+        ll = self.table[hk]
+        for list_key, _ in ll:
+            if list_key == k:
+                return
+        
+        ll.append((k, v))
+
+    def __str__(self):
+        return f'Hashtable[{self.table}]'
+
+
+ht = Hashtable([('PYTHON FTW', 123), ('key', 'value')])
+print(f'Хэш-таблица: {ht}')
+print(f'Ключ "PYTHON FTW": {ht.get("PYTHON FTW")}')
+print(f'Ключ "key": {ht.get("key")}')
+print(f'Взятие несуществующего ключа: {ht.get(0)}')
+
+print('\nПроверка коллизий через подмену хэш-функции:')
+ht.hash_function = lambda x: hash('key')
+ht.add('MyUniqueKey', 'SuperSecretPassword')
+print(f'Ключ "key": {ht.get("key")}')
+print(f'Ключ "MyUniqueKey" с таким же хэшем: {ht.get("MyUniqueKey")}')
+print(f'Хэш-таблица: {ht}')
