@@ -1,0 +1,45 @@
+from collections import deque
+from datetime import datetime
+
+class Searcher:
+    comparisons = 0
+
+    def __init__(self, arr):
+        self.original = arr
+        self.array = {}
+
+        for n, i in enumerate(arr):
+            h = hash(i)
+            if h in self.array:
+                if n not in self.array[h]:
+                    self.array[h].append(n)
+            else:
+                self.array[h] = deque([n])
+
+    def search(self, what):
+        h = hash(what)
+        try:
+            ll = self.array[h]
+            if len(ll) == 1:
+                return ll[0]
+
+            for n in ll:
+                self.comparisons += 1
+                if self.original[n] == what:
+                    return n
+        except KeyError:
+            return -1
+
+
+if input('Ручной ввод? [да/нет]: ').lower() == 'да':
+    arr = [int(i) for i in input('Введите числа через пробел: ').split()]
+    what = int(input('Какое число найти? '))
+else:
+    import random
+
+    num = int(input('Введите количество случайных чисел: '))
+    arr = [random.randint(0, 100000) for i in range(num)]
+    what = arr[random.randint(0, num - 1)]
+start = datetime.now()
+s = Searcher(arr)
+print(f'Найденный индекс: {s.search(what)}, сравнений: {s.comparisons}, Время работы: {datetime.now() - start}')
